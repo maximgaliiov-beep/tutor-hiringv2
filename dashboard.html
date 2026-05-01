@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brighterly Recruitment Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;padding:20px}
+h1{text-align:center;color:#fff;font-size:28px;margin-bottom:4px}
+.subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:30px}
+h2{color:#fff;font-size:20px;margin:30px 0 15px;padding-bottom:8px;border-bottom:1px solid #333}
+.card{background:#16213e;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,.3)}
+.row{display:flex;gap:20px;flex-wrap:wrap}
+.row .card{flex:1;min-width:280px}
+.chart-container{position:relative;width:100%;max-height:400px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 12px;text-align:center;border:1px solid #2a2a4a}
+th{background:#0f3460;color:#fff;font-weight:600}
+td{background:#16213e}
+.good{color:#2ecc71;font-weight:700}.mid{color:#f39c12;font-weight:700}.low{color:#e74c3c;font-weight:700}
+canvas{max-height:350px}
+</style></head><body>
+<h1>🎓 Brighterly Recruitment Dashboard</h1>
+<div class="subtitle">Generated: 2026-04-17 02:03:26 UTC</div>
+
+<h2>📊 Combined Funnel (All-Time)</h2>
+<div class="card"><div class="chart-container"><canvas id="funnelChart"></canvas></div></div>
+
+<h2>📈 By Direction</h2>
+<div class="row">
+<div class="card"><canvas id="mathChart"></canvas></div>
+<div class="card"><canvas id="elaChart"></canvas></div>
+<div class="card"><canvas id="demoChart"></canvas></div>
+</div>
+
+<h2>📱 By Source</h2>
+<div class="card"><div class="chart-container"><canvas id="sourceChart"></canvas></div></div>
+
+<h2>📋 Conversion Rates</h2>
+<div class="card"><table id="convTable"></table></div>
+
+<h2>📅 Cohort Analysis (Last 6 Months)</h2>
+<div class="card"><table id="cohortTable"></table></div>
+
+<h2>📉 Cohort Trends</h2>
+<div class="card"><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
+
+<script>
+const D = {
+"generated": "2026-05-01 02:04 UTC",
+"total_funnel": {
+"applied": 149590,
+"evaluation": 6342,
+"offer_accepted": 3207,
+"practice_completed": 2313,
+"hired": 1708
+},
+"dir_funnels": {
+"Math": {
+"applied": 69123,
+"evaluation": 3458,
+"offer_accepted": 1765,
+"practice_completed": 1298,
+"hired": 1101
+},
+"ELA": {
+"applied": 72112,
+"evaluation": 2491,
+"offer_accepted": 1264,
+"practice_completed": 892,
+"hired": 535
+},
+"Demo": {
+"applied": 8355,
+"evaluation": 393,
+"offer_accepted": 178,
+"practice_completed": 123,
+"hired": 72
+}
+},
+"src_funnels": {
+"facebook": {
+"applied": 59354,
+"evaluation": 919,
+"offer_accepted": 429,
+"practice_completed": 322,
+"hired": 193
+},
+"non-facebook": {
+"applied": 90236,
+"evaluation": 5423,
+"offer_accepted": 2778,
+"practice_completed": 1991,
+"hired": 1515
+}
+},
+"offer_funnels": {
+"math_tutor": {
+"funnel": {
+"applied": 49693,
+"evaluation": 3220,
+"offer_accepted": 1662,
+"practice_completed": 1208,
+"hired": 1040
+},
+"title": "Online Math Tutor",
+"direction": "Math",
+"source": "non-facebook"
+},
+"math_teacher": {
+"funnel": {
+"applied": 19430,
+"evaluation": 238,
+"offer_accepted": 103,
+"practice_completed": 90,
+"hired": 61
+},
+"title": "Online Math Teacher",
+"direction": "Math",
+"source": "facebook"
+},
+"ela_tutor": {
+"funnel": {
+"applied": 32188,
+"evaluation": 1810,
+"offer_accepted": 938,
+"practice_completed": 660,
+"hired": 403
+},
+"title": "Online ELA Tutor",
+"direction": "ELA",
+"source": "non-facebook"
+},
+"ela_teacher": {
+"funnel": {
+"applied": 39924,
+"evaluation": 681,
+"offer_accepted": 326,
+"practice_completed": 232,
+"hired": 132
+},
+"title": "Online ELA Teacher",
+"direction": "ELA",
+"source": "facebook"
+},
+"demo_tutor": {
+"funnel": {
+"applied": 8355,
+"evaluation": 393,
+"offer_accepted": 178,
+"practice_completed": 123,
+"hired": 72
+},
+"title": "Online Demo Lesson Tutor",
+"direction": "Demo",
+"source": "non-facebook"
+}
+},
+"cohorts": {
+"2023-01": {
+"Math": {
+"applied": 121,
+"evaluation": 11,
+"offer_accepted": 5,
+"practice_completed": 4,
+"hired": 3
+},
+"src:non-facebook": {
+"applied": 123,
+"evaluation": 11,
+"offer_accepted": 5,
+"practice_completed": 4,
+"hired": 3
+},
+"ALL": {
+"applied": 123,
+"evaluation": 11,
+"offer_accepted": 5,
+"practice_completed": 4,
+"hired": 3
+},
+"ELA": {
+"applied": 2,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2023-02": {
+"Math": {
+"applied": 157,
+"evaluation": 10,
+"offer_accepted": 7,
+"practice_completed": 4,
+"hired": 4
+},
+"src:non-facebook": {
+"applied": 157,
+"evaluation": 10,
+"offer_accepted": 7,
+"practice_completed": 4,
+"hired": 4
+},
+"ALL": {
+"applied": 157,
+"evaluation": 10,
+"offer_accepted": 7,
+"practice_completed": 4,
+"hired": 4
+}
+},
+"2023-03": {
+"Math": {
+"applied": 269,
+"evaluation": 12,
+"offer_accepted": 8,
+"practice_completed": 5,
+"hired": 5
+},
+"src:non-facebook": {
+"applied": 270,
+"evaluation": 12,
+"offer_accepted": 8,
+"practice_completed": 5,
+"hired": 5
+},
+"ALL": {
+"applied": 270,
+"evaluation": 12,
+"offer_accepted": 8,
+"practice_completed": 5,
+"hired": 5
+},
+"Demo": {
+"applied": 1,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2023-04": {
+"Math": {
+"applied": 171,
+"evaluation": 10,
+"offer_accepted": 6,
+"practice_completed": 3,
+"hired": 3
+},
+"src:non-facebook": {
+"applied": 171,
+"evaluation": 10,
+"offer_accepted": 6,
+"practice_completed": 3,
+"hired": 3
+},
+"ALL": {
+"applied": 171,
+"evaluation": 10,
+"offer_accepted": 6,
+"practice_completed": 3,
+"hired": 3
+}
+},
+"2023-05": {
+"Math": {
+"applied": 61,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+},
+"src:non-facebook": {
+"applied": 61,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+},
+"ALL": {
+"applied": 61,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+}
+},
+"2023-06": {
+"Math": {
+"applied": 228,
+"evaluation": 10,
+"offer_accepted": 8,
+"practice_completed": 6,
+"hired": 6
+},
+"src:non-facebook": {
+"applied": 228,
+"evaluation": 10,
+"offer_accepted": 8,
+"practice_completed": 6,
+"hired": 6
+},
+"ALL": {
+"applied": 228,
+"evaluation": 10,
+"offer_accepted": 8,
+"practice_completed": 6,
+"hired": 6
+}
+},
+"2023-07": {
+"Math": {
+"applied": 296,
+"evaluation": 25,
+"offer_accepted": 19,
+"practice_completed": 16,
+"hired": 16
+},
+"src:non-facebook": {
+"applied": 297,
+"evaluation": 26,
+"offer_accepted": 19,
+"practice_completed": 16,
+"hired": 16
+},
+"ALL": {
+"applied": 297,
+"evaluation": 26,
+"offer_accepted": 19,
+"practice_completed": 16,
+"hired": 16
+},
+"Demo": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2023-08": {
+"Math": {
+"applied": 90,
+"evaluation": 3,
+"offer_accepted": 2,
+"practice_completed": 0,
+"hired": 0
+},
+"src:non-facebook": {
+"applied": 90,
+"evaluation": 3,
+"offer_accepted": 2,
+"practice_completed": 0,
+"hired": 0
+},
+"ALL": {
+"applied": 90,
+"evaluation": 3,
+"offer_accepted": 2,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2023-09": {
+"Math": {
+"applied": 455,
+"evaluation": 27,
+"offer_accepted": 14,
+"practice_completed": 12,
+"hired": 12
+},
+"src:non-facebook": {
+"applied": 458,
+"evaluation": 28,
+"offer_accepted": 14,
+"practice_completed": 12,
+"hired": 12
+},
+"ALL": {
+"applied": 458,
+"evaluation": 28,
+"offer_accepted": 14,
+"practice_completed": 12,
+"hired": 12
+},
+"ELA": {
+"applied": 3,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2023-10": {
+"Math": {
+"applied": 390,
+"evaluation": 21,
+"offer_accepted": 12,
+"practice_completed": 6,
+"hired": 6
+},
+"src:non-facebook": {
+"applied": 391,
+"evaluation": 22,
+"offer_accepted": 13,
+"practice_completed": 7,
+"hired": 7
+},
+"ALL": {
+"applied": 391,
+"evaluation": 22,
+"offer_accepted": 13,
+"practice_completed": 7,
+"hired": 7
+},
+"ELA": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+}
+},
+"2023-11": {
+"Math": {
+"applied": 985,
+"evaluation": 39,
+"offer_accepted": 22,
+"practice_completed": 16,
+"hired": 16
+},
+"src:non-facebook": {
+"applied": 987,
+"evaluation": 40,
+"offer_accepted": 22,
+"practice_completed": 16,
+"hired": 16
+},
+"ALL": {
+"applied": 988,
+"evaluation": 41,
+"offer_accepted": 23,
+"practice_completed": 17,
+"hired": 17
+},
+"ELA": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+},
+"Demo": {
+"applied": 2,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2023-12": {
+"Math": {
+"applied": 736,
+"evaluation": 30,
+"offer_accepted": 17,
+"practice_completed": 13,
+"hired": 12
+},
+"src:non-facebook": {
+"applied": 736,
+"evaluation": 29,
+"offer_accepted": 16,
+"practice_completed": 12,
+"hired": 12
+},
+"ALL": {
+"applied": 737,
+"evaluation": 30,
+"offer_accepted": 17,
+"practice_completed": 13,
+"hired": 12
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 0
+},
+"Demo": {
+"applied": 1,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2024-01": {
+"Math": {
+"applied": 1269,
+"evaluation": 67,
+"offer_accepted": 39,
+"practice_completed": 31,
+"hired": 31
+},
+"src:non-facebook": {
+"applied": 1272,
+"evaluation": 69,
+"offer_accepted": 40,
+"practice_completed": 31,
+"hired": 31
+},
+"ALL": {
+"applied": 1272,
+"evaluation": 69,
+"offer_accepted": 40,
+"practice_completed": 31,
+"hired": 31
+},
+"ELA": {
+"applied": 3,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2024-02": {
+"Math": {
+"applied": 797,
+"evaluation": 70,
+"offer_accepted": 47,
+"practice_completed": 37,
+"hired": 36
+},
+"src:non-facebook": {
+"applied": 799,
+"evaluation": 72,
+"offer_accepted": 47,
+"practice_completed": 37,
+"hired": 36
+},
+"ALL": {
+"applied": 800,
+"evaluation": 73,
+"offer_accepted": 47,
+"practice_completed": 37,
+"hired": 36
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 2,
+"evaluation": 2,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"Demo": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2024-03": {
+"Math": {
+"applied": 1270,
+"evaluation": 95,
+"offer_accepted": 61,
+"practice_completed": 44,
+"hired": 42
+},
+"src:non-facebook": {
+"applied": 1278,
+"evaluation": 97,
+"offer_accepted": 63,
+"practice_completed": 47,
+"hired": 44
+},
+"ALL": {
+"applied": 1279,
+"evaluation": 98,
+"offer_accepted": 64,
+"practice_completed": 47,
+"hired": 44
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 3,
+"evaluation": 2,
+"offer_accepted": 2,
+"practice_completed": 2,
+"hired": 2
+},
+"Demo": {
+"applied": 6,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 0
+}
+},
+"2024-04": {
+"Math": {
+"applied": 1450,
+"evaluation": 104,
+"offer_accepted": 70,
+"practice_completed": 49,
+"hired": 44
+},
+"src:non-facebook": {
+"applied": 1511,
+"evaluation": 117,
+"offer_accepted": 72,
+"practice_completed": 50,
+"hired": 45
+},
+"ALL": {
+"applied": 1511,
+"evaluation": 117,
+"offer_accepted": 72,
+"practice_completed": 50,
+"hired": 45
+},
+"ELA": {
+"applied": 11,
+"evaluation": 7,
+"offer_accepted": 1,
+"practice_completed": 0,
+"hired": 0
+},
+"Demo": {
+"applied": 50,
+"evaluation": 6,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+}
+},
+"2024-05": {
+"Math": {
+"applied": 1065,
+"evaluation": 76,
+"offer_accepted": 49,
+"practice_completed": 36,
+"hired": 36
+},
+"src:non-facebook": {
+"applied": 1080,
+"evaluation": 78,
+"offer_accepted": 51,
+"practice_completed": 38,
+"hired": 37
+},
+"ALL": {
+"applied": 1081,
+"evaluation": 79,
+"offer_accepted": 52,
+"practice_completed": 39,
+"hired": 38
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+},
+"ELA": {
+"applied": 5,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 0
+},
+"Demo": {
+"applied": 11,
+"evaluation": 2,
+"offer_accepted": 2,
+"practice_completed": 2,
+"hired": 2
+}
+},
+"2024-06": {
+"Math": {
+"applied": 1082,
+"evaluation": 104,
+"offer_accepted": 64,
+"practice_completed": 51,
+"hired": 49
+},
+"src:non-facebook": {
+"applied": 1104,
+"evaluation": 107,
+"offer_accepted": 67,
+"practice_completed": 53,
+"hired": 50
+},
+"ALL": {
+"applied": 1106,
+"evaluation": 109,
+"offer_accepted": 67,
+"practice_completed": 53,
+"hired": 50
+},
+"src:facebook": {
+"applied": 2,
+"evaluation": 2,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 4,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 0
+},
+"Demo": {
+"applied": 20,
+"evaluation": 3,
+"offer_accepted": 2,
+"practice_completed": 1,
+"hired": 1
+}
+},
+"2024-07": {
+"Math": {
+"applied": 1365,
+"evaluation": 112,
+"offer_accepted": 62,
+"practice_completed": 47,
+"hired": 42
+},
+"src:non-facebook": {
+"applied": 1390,
+"evaluation": 121,
+"offer_accepted": 69,
+"practice_completed": 52,
+"hired": 44
+},
+"ALL": {
+"applied": 1392,
+"evaluation": 122,
+"offer_accepted": 70,
+"practice_completed": 52,
+"hired": 44
+},
+"src:facebook": {
+"applied": 2,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 10,
+"evaluation": 6,
+"offer_accepted": 5,
+"practice_completed": 4,
+"hired": 2
+},
+"Demo": {
+"applied": 17,
+"evaluation": 4,
+"offer_accepted": 3,
+"practice_completed": 1,
+"hired": 0
+}
+},
+"2024-08": {
+"Math": {
+"applied": 1183,
+"evaluation": 114,
+"offer_accepted": 66,
+"practice_completed": 48,
+"hired": 47
+},
+"src:non-facebook": {
+"applied": 1194,
+"evaluation": 119,
+"offer_accepted": 68,
+"practice_completed": 49,
+"hired": 48
+},
+"ALL": {
+"applied": 1196,
+"evaluation": 119,
+"offer_accepted": 68,
+"practice_completed": 49,
+"hired": 48
+},
+"src:facebook": {
+"applied": 2,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 10,
+"evaluation": 5,
+"offer_accepted": 2,
+"practice_completed": 1,
+"hired": 1
+},
+"Demo": {
+"applied": 3,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2024-09": {
+"Math": {
+"applied": 1151,
+"evaluation": 109,
+"offer_accepted": 59,
+"practice_completed": 42,
+"hired": 38
+},
+"src:non-facebook": {
+"applied": 1164,
+"evaluation": 113,
+"offer_accepted": 62,
+"practice_completed": 44,
+"hired": 38
+},
+"ALL": {
+"applied": 1165,
+"evaluation": 113,
+"offer_accepted": 62,
+"practice_completed": 44,
+"hired": 38
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 8,
+"evaluation": 3,
+"offer_accepted": 2,
+"practice_completed": 2,
+"hired": 0
+},
+"Demo": {
+"applied": 6,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2024-10": {
+"Math": {
+"applied": 946,
+"evaluation": 92,
+"offer_accepted": 52,
+"practice_completed": 31,
+"hired": 29
+},
+"src:non-facebook": {
+"applied": 959,
+"evaluation": 95,
+"offer_accepted": 53,
+"practice_completed": 32,
+"hired": 29
+},
+"ALL": {
+"applied": 959,
+"evaluation": 95,
+"offer_accepted": 53,
+"practice_completed": 32,
+"hired": 29
+},
+"ELA": {
+"applied": 6,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 0
+},
+"Demo": {
+"applied": 7,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2024-11": {
+"Math": {
+"applied": 1019,
+"evaluation": 95,
+"offer_accepted": 52,
+"practice_completed": 26,
+"hired": 25
+},
+"src:non-facebook": {
+"applied": 1025,
+"evaluation": 97,
+"offer_accepted": 53,
+"practice_completed": 26,
+"hired": 25
+},
+"ALL": {
+"applied": 1025,
+"evaluation": 97,
+"offer_accepted": 53,
+"practice_completed": 26,
+"hired": 25
+},
+"ELA": {
+"applied": 2,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"Demo": {
+"applied": 4,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2024-12": {
+"Math": {
+"applied": 708,
+"evaluation": 60,
+"offer_accepted": 27,
+"practice_completed": 13,
+"hired": 13
+},
+"src:non-facebook": {
+"applied": 713,
+"evaluation": 62,
+"offer_accepted": 28,
+"practice_completed": 13,
+"hired": 13
+},
+"ALL": {
+"applied": 713,
+"evaluation": 62,
+"offer_accepted": 28,
+"practice_completed": 13,
+"hired": 13
+},
+"ELA": {
+"applied": 5,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2025-01": {
+"Math": {
+"applied": 1395,
+"evaluation": 139,
+"offer_accepted": 83,
+"practice_completed": 42,
+"hired": 39
+},
+"src:non-facebook": {
+"applied": 1410,
+"evaluation": 149,
+"offer_accepted": 89,
+"practice_completed": 44,
+"hired": 41
+},
+"ALL": {
+"applied": 1411,
+"evaluation": 150,
+"offer_accepted": 89,
+"practice_completed": 44,
+"hired": 41
+},
+"ELA": {
+"applied": 11,
+"evaluation": 9,
+"offer_accepted": 6,
+"practice_completed": 2,
+"hired": 2
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"Demo": {
+"applied": 5,
+"evaluation": 2,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2025-02": {
+"Math": {
+"applied": 1846,
+"evaluation": 174,
+"offer_accepted": 105,
+"practice_completed": 73,
+"hired": 66
+},
+"src:non-facebook": {
+"applied": 1891,
+"evaluation": 194,
+"offer_accepted": 118,
+"practice_completed": 82,
+"hired": 69
+},
+"ALL": {
+"applied": 1894,
+"evaluation": 197,
+"offer_accepted": 119,
+"practice_completed": 83,
+"hired": 70
+},
+"ELA": {
+"applied": 38,
+"evaluation": 21,
+"offer_accepted": 13,
+"practice_completed": 9,
+"hired": 3
+},
+"src:facebook": {
+"applied": 3,
+"evaluation": 3,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+},
+"Demo": {
+"applied": 10,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+}
+},
+"2025-03": {
+"Math": {
+"applied": 2567,
+"evaluation": 228,
+"offer_accepted": 117,
+"practice_completed": 74,
+"hired": 66
+},
+"src:non-facebook": {
+"applied": 3104,
+"evaluation": 304,
+"offer_accepted": 160,
+"practice_completed": 106,
+"hired": 85
+},
+"ALL": {
+"applied": 3105,
+"evaluation": 305,
+"offer_accepted": 161,
+"practice_completed": 107,
+"hired": 86
+},
+"ELA": {
+"applied": 537,
+"evaluation": 76,
+"offer_accepted": 43,
+"practice_completed": 32,
+"hired": 19
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+},
+"Demo": {
+"applied": 1,
+"evaluation": 1,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+}
+},
+"2025-04": {
+"Math": {
+"applied": 1594,
+"evaluation": 172,
+"offer_accepted": 71,
+"practice_completed": 55,
+"hired": 42
+},
+"src:non-facebook": {
+"applied": 2601,
+"evaluation": 276,
+"offer_accepted": 130,
+"practice_completed": 88,
+"hired": 58
+},
+"ALL": {
+"applied": 2602,
+"evaluation": 276,
+"offer_accepted": 130,
+"practice_completed": 88,
+"hired": 58
+},
+"src:facebook": {
+"applied": 1,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 1002,
+"evaluation": 100,
+"offer_accepted": 56,
+"practice_completed": 32,
+"hired": 15
+},
+"Demo": {
+"applied": 6,
+"evaluation": 4,
+"offer_accepted": 3,
+"practice_completed": 1,
+"hired": 1
+}
+},
+"2025-05": {
+"Math": {
+"applied": 1849,
+"evaluation": 191,
+"offer_accepted": 78,
+"practice_completed": 61,
+"hired": 45
+},
+"src:non-facebook": {
+"applied": 2865,
+"evaluation": 368,
+"offer_accepted": 168,
+"practice_completed": 124,
+"hired": 78
+},
+"ALL": {
+"applied": 2869,
+"evaluation": 371,
+"offer_accepted": 170,
+"practice_completed": 125,
+"hired": 79
+},
+"ELA": {
+"applied": 1016,
+"evaluation": 179,
+"offer_accepted": 92,
+"practice_completed": 64,
+"hired": 34
+},
+"src:facebook": {
+"applied": 4,
+"evaluation": 3,
+"offer_accepted": 2,
+"practice_completed": 1,
+"hired": 1
+},
+"Demo": {
+"applied": 4,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2025-06": {
+"Math": {
+"applied": 2819,
+"evaluation": 191,
+"offer_accepted": 96,
+"practice_completed": 80,
+"hired": 60
+},
+"src:non-facebook": {
+"applied": 4619,
+"evaluation": 316,
+"offer_accepted": 167,
+"practice_completed": 129,
+"hired": 90
+},
+"ALL": {
+"applied": 4627,
+"evaluation": 321,
+"offer_accepted": 170,
+"practice_completed": 132,
+"hired": 93
+},
+"ELA": {
+"applied": 1800,
+"evaluation": 126,
+"offer_accepted": 72,
+"practice_completed": 52,
+"hired": 33
+},
+"src:facebook": {
+"applied": 8,
+"evaluation": 5,
+"offer_accepted": 3,
+"practice_completed": 3,
+"hired": 3
+},
+"Demo": {
+"applied": 8,
+"evaluation": 4,
+"offer_accepted": 2,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2025-07": {
+"Math": {
+"applied": 2827,
+"evaluation": 184,
+"offer_accepted": 89,
+"practice_completed": 74,
+"hired": 53
+},
+"src:non-facebook": {
+"applied": 5120,
+"evaluation": 289,
+"offer_accepted": 143,
+"practice_completed": 111,
+"hired": 80
+},
+"ALL": {
+"applied": 5123,
+"evaluation": 290,
+"offer_accepted": 143,
+"practice_completed": 111,
+"hired": 80
+},
+"src:facebook": {
+"applied": 3,
+"evaluation": 1,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 2290,
+"evaluation": 104,
+"offer_accepted": 53,
+"practice_completed": 37,
+"hired": 27
+},
+"Demo": {
+"applied": 6,
+"evaluation": 2,
+"offer_accepted": 1,
+"practice_completed": 0,
+"hired": 0
+}
+},
+"2025-08": {
+"Math": {
+"applied": 2652,
+"evaluation": 131,
+"offer_accepted": 51,
+"practice_completed": 41,
+"hired": 32
+},
+"src:non-facebook": {
+"applied": 5576,
+"evaluation": 304,
+"offer_accepted": 137,
+"practice_completed": 106,
+"hired": 75
+},
+"ALL": {
+"applied": 5579,
+"evaluation": 306,
+"offer_accepted": 139,
+"practice_completed": 108,
+"hired": 77
+},
+"ELA": {
+"applied": 2921,
+"evaluation": 170,
+"offer_accepted": 87,
+"practice_completed": 66,
+"hired": 44
+},
+"src:facebook": {
+"applied": 3,
+"evaluation": 2,
+"offer_accepted": 2,
+"practice_completed": 2,
+"hired": 2
+},
+"Demo": {
+"applied": 6,
+"evaluation": 5,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 1
+}
+},
+"2025-09": {
+"Math": {
+"applied": 1339,
+"evaluation": 52,
+"offer_accepted": 21,
+"practice_completed": 15,
+"hired": 11
+},
+"src:non-facebook": {
+"applied": 4174,
+"evaluation": 205,
+"offer_accepted": 97,
+"practice_completed": 63,
+"hired": 42
+},
+"ALL": {
+"applied": 4179,
+"evaluation": 210,
+"offer_accepted": 98,
+"practice_completed": 64,
+"hired": 42
+},
+"src:facebook": {
+"applied": 5,
+"evaluation": 5,
+"offer_accepted": 1,
+"practice_completed": 1,
+"hired": 0
+},
+"ELA": {
+"applied": 2836,
+"evaluation": 156,
+"offer_accepted": 75,
+"practice_completed": 47,
+"hired": 29
+},
+"Demo": {
+"applied": 4,
+"evaluation": 2,
+"offer_accepted": 2,
+"practice_completed": 2,
+"hired": 2
+}
+},
+"2025-10": {
+"Math": {
+"applied": 1570,
+"evaluation": 76,
+"offer_accepted": 31,
+"practice_completed": 24,
+"hired": 18
+},
+"src:non-facebook": {
+"applied": 3224,
+"evaluation": 212,
+"offer_accepted": 91,
+"practice_completed": 62,
+"hired": 44
+},
+"ALL": {
+"applied": 4678,
+"evaluation": 280,
+"offer_accepted": 129,
+"practice_completed": 89,
+"hired": 56
+},
+"src:facebook": {
+"applied": 1454,
+"evaluation": 68,
+"offer_accepted": 38,
+"practice_completed": 27,
+"hired": 12
+},
+"ELA": {
+"applied": 2533,
+"evaluation": 169,
+"offer_accepted": 83,
+"practice_completed": 55,
+"hired": 32
+},
+"Demo": {
+"applied": 575,
+"evaluation": 35,
+"offer_accepted": 15,
+"practice_completed": 10,
+"hired": 6
+}
+},
+"2025-11": {
+"Math": {
+"applied": 1744,
+"evaluation": 92,
+"offer_accepted": 40,
+"practice_completed": 35,
+"hired": 25
+},
+"src:non-facebook": {
+"applied": 2574,
+"evaluation": 199,
+"offer_accepted": 96,
+"practice_completed": 71,
+"hired": 49
+},
+"ALL": {
+"applied": 4626,
+"evaluation": 304,
+"offer_accepted": 155,
+"practice_completed": 111,
+"hired": 72
+},
+"src:facebook": {
+"applied": 2052,
+"evaluation": 105,
+"offer_accepted": 59,
+"practice_completed": 40,
+"hired": 23
+},
+"ELA": {
+"applied": 2757,
+"evaluation": 204,
+"offer_accepted": 112,
+"practice_completed": 74,
+"hired": 46
+},
+"Demo": {
+"applied": 125,
+"evaluation": 8,
+"offer_accepted": 3,
+"practice_completed": 2,
+"hired": 1
+}
+},
+"2025-12": {
+"Math": {
+"applied": 2460,
+"evaluation": 101,
+"offer_accepted": 43,
+"practice_completed": 39,
+"hired": 27
+},
+"src:non-facebook": {
+"applied": 3061,
+"evaluation": 196,
+"offer_accepted": 94,
+"practice_completed": 73,
+"hired": 52
+},
+"ALL": {
+"applied": 5133,
+"evaluation": 279,
+"offer_accepted": 144,
+"practice_completed": 114,
+"hired": 76
+},
+"src:facebook": {
+"applied": 2072,
+"evaluation": 83,
+"offer_accepted": 50,
+"practice_completed": 41,
+"hired": 24
+},
+"ELA": {
+"applied": 2321,
+"evaluation": 147,
+"offer_accepted": 85,
+"practice_completed": 62,
+"hired": 40
+},
+"Demo": {
+"applied": 352,
+"evaluation": 31,
+"offer_accepted": 16,
+"practice_completed": 13,
+"hired": 9
+}
+},
+"2026-01": {
+"Math": {
+"applied": 3635,
+"evaluation": 140,
+"offer_accepted": 54,
+"practice_completed": 48,
+"hired": 33
+},
+"src:non-facebook": {
+"applied": 4182,
+"evaluation": 270,
+"offer_accepted": 122,
+"practice_completed": 89,
+"hired": 61
+},
+"ALL": {
+"applied": 8493,
+"evaluation": 420,
+"offer_accepted": 193,
+"practice_completed": 145,
+"hired": 97
+},
+"src:facebook": {
+"applied": 4311,
+"evaluation": 150,
+"offer_accepted": 71,
+"practice_completed": 56,
+"hired": 36
+},
+"ELA": {
+"applied": 4287,
+"evaluation": 246,
+"offer_accepted": 121,
+"practice_completed": 84,
+"hired": 55
+},
+"Demo": {
+"applied": 571,
+"evaluation": 34,
+"offer_accepted": 18,
+"practice_completed": 13,
+"hired": 9
+}
+},
+"2026-02": {
+"Math": {
+"applied": 7186,
+"evaluation": 117,
+"offer_accepted": 50,
+"practice_completed": 42,
+"hired": 30
+},
+"src:non-facebook": {
+"applied": 5378,
+"evaluation": 283,
+"offer_accepted": 144,
+"practice_completed": 115,
+"hired": 75
+},
+"ALL": {
+"applied": 18993,
+"evaluation": 488,
+"offer_accepted": 233,
+"practice_completed": 181,
+"hired": 115
+},
+"src:facebook": {
+"applied": 13615,
+"evaluation": 205,
+"offer_accepted": 89,
+"practice_completed": 66,
+"hired": 40
+},
+"ELA": {
+"applied": 10727,
+"evaluation": 312,
+"offer_accepted": 152,
+"practice_completed": 119,
+"hired": 73
+},
+"Demo": {
+"applied": 1080,
+"evaluation": 59,
+"offer_accepted": 31,
+"practice_completed": 20,
+"hired": 12
+}
+},
+"2026-03": {
+"Math": {
+"applied": 8017,
+"evaluation": 108,
+"offer_accepted": 43,
+"practice_completed": 36,
+"hired": 26
+},
+"src:non-facebook": {
+"applied": 7652,
+"evaluation": 323,
+"offer_accepted": 144,
+"practice_completed": 108,
+"hired": 73
+},
+"ALL": {
+"applied": 23400,
+"evaluation": 506,
+"offer_accepted": 223,
+"practice_completed": 171,
+"hired": 114
+},
+"src:facebook": {
+"applied": 15748,
+"evaluation": 183,
+"offer_accepted": 79,
+"practice_completed": 63,
+"hired": 41
+},
+"ELA": {
+"applied": 12834,
+"evaluation": 291,
+"offer_accepted": 137,
+"practice_completed": 103,
+"hired": 68
+},
+"Demo": {
+"applied": 2549,
+"evaluation": 107,
+"offer_accepted": 43,
+"practice_completed": 32,
+"hired": 20
+}
+},
+"2026-04": {
+"Math": {
+"applied": 8344,
+"evaluation": 64,
+"offer_accepted": 24,
+"practice_completed": 18,
+"hired": 12
+},
+"src:non-facebook": {
+"applied": 15294,
+"evaluation": 185,
+"offer_accepted": 84,
+"practice_completed": 62,
+"hired": 18
+},
+"ALL": {
+"applied": 35296,
+"evaluation": 281,
+"offer_accepted": 112,
+"practice_completed": 79,
+"hired": 25
+},
+"src:facebook": {
+"applied": 20002,
+"evaluation": 96,
+"offer_accepted": 28,
+"practice_completed": 17,
+"hired": 7
+},
+"ELA": {
+"applied": 24039,
+"evaluation": 143,
+"offer_accepted": 58,
+"practice_completed": 40,
+"hired": 8
+},
+"Demo": {
+"applied": 2913,
+"evaluation": 74,
+"offer_accepted": 30,
+"practice_completed": 21,
+"hired": 5
+}
+},
+"2026-05": {
+"Math": {
+"applied": 15,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"src:non-facebook": {
+"applied": 53,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"ALL": {
+"applied": 112,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"src:facebook": {
+"applied": 59,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"ELA": {
+"applied": 87,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+},
+"Demo": {
+"applied": 10,
+"evaluation": 0,
+"offer_accepted": 0,
+"practice_completed": 0,
+"hired": 0
+}
+}
+},
+"funnel_order": [
+"applied",
+"evaluation",
+"offer_accepted",
+"practice_completed",
+"hired"
+],
+"labels": {
+"applied": "Applied",
+"evaluation": "Interview Completed (Evaluation)",
+"offer_accepted": "Offer Accepted",
+"practice_completed": "Practice Completed",
+"hired": "Active Tutor (Hired)"
+}
+};
+const STAGES = ["applied","evaluation","offer_accepted","practice_completed","hired"];
+const LABELS = ["Applied","Interview","Offer","Practice","Hired"];
+const pct = (a,b) => b?((a/b)*100).toFixed(1)+'%':'0%';
+const pctN = (a,b) => b?((a/b)*100):0;
+
+// Colors
+const FUNNEL_COLORS = ['#3498db','#2ecc71','#e67e22','#9b59b6','#e74c3c'];
+const DIR_COLORS = {Math:'#3498db',ELA:'#2ecc71',Demo:'#e67e22'};
+const SRC_COLORS = {Facebook:'#4267B2','Non-Facebook':'#2ecc71'};
+
+const darkOpts = {
+  responsive:true,
+  plugins:{legend:{labels:{color:'#ccc'}}},
+  scales:{
+    x:{ticks:{color:'#aaa'},grid:{color:'#333'}},
+    y:{ticks:{color:'#aaa'},grid:{color:'#333'}}
+  }
+};
+
+// 1. Combined Funnel
+const td = D.total;
+new Chart(document.getElementById('funnelChart'),{
+  type:'bar',
+  data:{
+    labels:LABELS.map((l,i)=>l+' ('+pct(td[STAGES[i]],td.applied)+')'),
+    datasets:[{
+      label:'Candidates',
+      data:STAGES.map(s=>td[s]),
+      backgroundColor:FUNNEL_COLORS,
+      borderRadius:6
+    }]
+  },
+  options:{...darkOpts,indexAxis:'y',plugins:{...darkOpts.plugins,title:{display:true,text:'All-Time Funnel: '+td.applied.toLocaleString()+' Applied → '+td.hired.toLocaleString()+' Hired',color:'#fff',font:{size:14}}}}
+});
+
+// 2. Direction charts
+function dirChart(id,name,color){
+  const d=D.byDir[name];
+  new Chart(document.getElementById(id),{
+    type:'bar',
+    data:{
+      labels:LABELS,
+      datasets:[{label:name,data:STAGES.map(s=>d[s]),backgroundColor:color+'99',borderColor:color,borderWidth:2,borderRadius:6}]
+    },
+    options:{...darkOpts,plugins:{...darkOpts.plugins,title:{display:true,text:name+': '+d.applied.toLocaleString()+' → '+d.hired.toLocaleString()+' ('+pct(d.hired,d.applied)+')',color:'#fff',font:{size:13}}}}
+  });
+}
+dirChart('mathChart','Math','#3498db');
+dirChart('elaChart','ELA','#2ecc71');
+dirChart('demoChart','Demo','#e67e22');
+
+// 3. Source comparison
+new Chart(document.getElementById('sourceChart'),{
+  type:'bar',
+  data:{
+    labels:LABELS,
+    datasets:['Facebook','Non-Facebook'].map(src=>{
+      const d=D.bySrc[src];
+      return {label:src,data:STAGES.map(s=>d[s]),backgroundColor:SRC_COLORS[src]+'99',borderColor:SRC_COLORS[src],borderWidth:2,borderRadius:6};
+    })
+  },
+  options:darkOpts
+});
+
+// 4. Conversion rates table
+(function(){
+  const t=document.getElementById('convTable');
+  const groups = [
+    ['Math',D.byDir.Math],['ELA',D.byDir.ELA],['Demo',D.byDir.Demo],
+    ['Facebook',D.bySrc.Facebook],['Non-FB',D.bySrc['Non-Facebook']],['Total',D.total]
+  ];
+  const convs = [
+    ['App→Interview','applied','evaluation'],
+    ['Interview→Offer','evaluation','offer_accepted'],
+    ['Offer→Practice','offer_accepted','practice_completed'],
+    ['Practice→Hired','practice_completed','hired'],
+    ['App→Hired','applied','hired']
+  ];
+  let h='<tr><th>Conversion</th>';
+  groups.forEach(g=>h+='<th>'+g[0]+'</th>');
+  h+='</tr>';
+  convs.forEach(([label,from,to])=>{
+    h+='<tr><td style="text-align:left;font-weight:600">'+label+'</td>';
+    groups.forEach(([,d])=>{
+      const v=pctN(d[to],d[from]);
+      const cls=v>=10?'good':v>=3?'mid':'low';
+      h+='<td class="'+cls+'">'+v.toFixed(1)+'%</td>';
+    });
+    h+='</tr>';
+  });
+  t.innerHTML=h;
+})();
+
+// 5. Cohort table
+(function(){
+  const t=document.getElementById('cohortTable');
+  let h='<tr><th>Cohort</th>';
+  LABELS.forEach(l=>h+='<th>'+l+'</th>');
+  h+='<th>App→Int%</th><th>App→Hired%</th></tr>';
+  D.cohMonths.forEach(m=>{
+    const d=D.cohTot[m];
+    const intPct=pctN(d.evaluation,d.applied);
+    const hirePct=pctN(d.hired,d.applied);
+    h+='<tr><td style="font-weight:600">'+m+'</td>';
+    STAGES.forEach(s=>h+='<td>'+d[s].toLocaleString()+'</td>');
+    // heatmap color
+    const intBg='rgba(46,204,113,'+(Math.min(intPct/15,1)*0.6+0.1)+')';
+    const hireBg='rgba(231,76,60,'+(Math.min(hirePct/3,1)*0.6+0.1)+')';
+    h+='<td style="background:'+intBg+';font-weight:700">'+intPct.toFixed(1)+'%</td>';
+    h+='<td style="background:'+hireBg+';font-weight:700">'+hirePct.toFixed(1)+'%</td></tr>';
+  });
+  t.innerHTML=h;
+})();
+
+// 6. Cohort trends
+(function(){
+  const months=D.cohMonths;
+  const mkLine=(label,color,dash,getData)=>({
+    label,borderColor:color,backgroundColor:color+'33',
+    data:months.map(m=>getData(m)),
+    borderDash:dash,tension:0.3,pointRadius:5,pointBackgroundColor:color
+  });
+  const fbD=m=>D.cohSrc[m].Facebook, nfD=m=>D.cohSrc[m]['Non-Facebook'];
+  new Chart(document.getElementById('trendChart'),{
+    type:'line',
+    data:{
+      labels:months,
+      datasets:[
+        mkLine('FB App→Int%','#4267B2',[],m=>pctN(fbD(m).evaluation,fbD(m).applied)),
+        mkLine('Non-FB App→Int%','#2ecc71',[],m=>pctN(nfD(m).evaluation,nfD(m).applied)),
+        mkLine('FB App→Hired%','#4267B2',[5,5],m=>pctN(fbD(m).hired,fbD(m).applied)),
+        mkLine('Non-FB App→Hired%','#2ecc71',[5,5],m=>pctN(nfD(m).hired,nfD(m).applied)),
+      ]
+    },
+    options:{...darkOpts,plugins:{...darkOpts.plugins,title:{display:true,text:'Conversion Trends by Source (Dashed = App→Hired)',color:'#fff',font:{size:14}}}}
+  });
+})();
+</script></body></html>
